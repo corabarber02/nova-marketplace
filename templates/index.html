@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Browse Listings — Nova SBE Marketplace{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Browse Listings</h2>
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('listings.new_listing') }}" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Sell Item
+    </a>
+  {% endif %}
+</div>
+
+<!-- Category filter buttons -->
+<div class="mb-4">
+  <a href="{{ url_for('listings.index') }}"
+     class="btn btn-sm me-1 {{ 'btn-secondary' if not active_category else 'btn-outline-secondary' }}">
+    All
+  </a>
+  {% for cat in categories %}
+    <a href="{{ url_for('listings.index', category=cat) }}"
+       class="btn btn-sm me-1 {{ 'btn-primary' if active_category == cat else 'btn-outline-primary' }}">
+      {{ cat }}
+    </a>
+  {% endfor %}
+</div>
+
+<!-- Listings grid -->
+{% if listings %}
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for listing in listings %}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          {% if listing.photo_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + listing.photo_filename) }}"
+                 class="card-img-top listing-img" alt="{{ listing.title }}">
+          {% else %}
+            <div class="card-img-top listing-img bg-light d-flex align-items-center justify-content-center text-muted">
+              <i class="bi bi-image fs-1"></i>
+            </div>
+          {% endif %}
+          <div class="card-body">
+            <span class="badge bg-secondary mb-1">{{ listing.category }}</span>
+            <h5 class="card-title">{{ listing.title }}</h5>
+            <p class="card-text fw-bold text-primary">€{{ "%.2f"|format(listing.price) }}</p>
+            <p class="card-text text-muted small">
+              {{ listing.description[:80] }}{% if listing.description|length > 80 %}...{% endif %}
+            </p>
+          </div>
+          <div class="card-footer bg-white border-top-0">
+            <a href="{{ url_for('listings.detail', listing_id=listing.id) }}"
+               class="btn btn-sm btn-outline-primary w-100">View Details</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="text-center text-muted py-5">
+    <i class="bi bi-basket fs-1"></i>
+    <p class="mt-2">No listings yet. Be the first to sell something!</p>
+  </div>
+{% endif %}
+{% endblock %}

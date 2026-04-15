@@ -1,0 +1,11 @@
+/* Listing card image — fixed height, cropped to fit */
+.listing-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Slightly larger brand text */
+.navbar-brand {
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+}
