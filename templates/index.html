@@ -1,64 +1,117 @@
-{% extends 'base.html' %}
-{% block title %}Browse Listings — Nova SBE Marketplace{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Nova SBE Marketplace{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="mb-0">Browse Listings</h2>
-  {% if current_user.is_authenticated %}
-    <a href="{{ url_for('listings.new_listing') }}" class="btn btn-primary">
-      <i class="bi bi-plus-circle"></i> Sell Item
-    </a>
-  {% endif %}
+
+<!-- Hero Section -->
+<div class="position-relative mb-5" style="height: 480px; overflow: hidden;">
+  <img src="{{ url_for('static', filename='campus.jpg') }}"
+       style="width: 100%; height: 100%; object-fit: cover; object-position: center 30%;"
+       alt="Nova SBE Campus">
+  <div class="position-absolute top-0 start-0 w-100 h-100"
+       style="background: linear-gradient(to bottom, rgba(10,25,60,0.45), rgba(10,25,60,0.75));">
+  </div>
+  <div class="position-absolute top-50 start-50 translate-middle text-center text-white w-100 px-3">
+    <p class="mb-2 text-uppercase fw-semibold ls-wide" style="letter-spacing: 3px; font-size: 0.85rem; opacity: 0.85;">
+      Nova SBE
+    </p>
+    <h1 class="fw-bold mb-3" style="font-size: 3rem;">
+      Student Marketplace
+    </h1>
+    <p class="mb-4 fs-5 opacity-75">Buy and sell with your fellow students</p>
+
+    <!-- Search bar -->
+    <form method="GET" action="{{ url_for('listings.index') }}" class="d-flex justify-content-center">
+      <div class="input-group shadow" style="max-width: 560px;">
+        <input type="text" name="search" class="form-control form-control-lg border-0"
+               placeholder="What are you looking for?"
+               value="{{ request.args.get('search', '') }}"
+               style="font-size: 1rem;">
+        <button class="btn px-4 fw-semibold" type="submit"
+                style="background-color: #0a3d91; color: white; border: none;">
+          Search
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<!-- Category filter buttons -->
-<div class="mb-4">
-  <a href="{{ url_for('listings.index') }}"
-     class="btn btn-sm me-1 {{ 'btn-secondary' if not active_category else 'btn-outline-secondary' }}">
-    All
-  </a>
-  {% for cat in categories %}
-    <a href="{{ url_for('listings.index', category=cat) }}"
-       class="btn btn-sm me-1 {{ 'btn-primary' if active_category == cat else 'btn-outline-primary' }}">
-      {{ cat }}
-    </a>
-  {% endfor %}
-</div>
+<div class="container">
 
-<!-- Listings grid -->
-{% if listings %}
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for listing in listings %}
-      <div class="col">
-        <div class="card h-100 shadow-sm">
-          {% if listing.photo_filename %}
-            <img src="{{ url_for('static', filename='uploads/' + listing.photo_filename) }}"
-                 class="card-img-top listing-img" alt="{{ listing.title }}">
-          {% else %}
-            <div class="card-img-top listing-img bg-light d-flex align-items-center justify-content-center text-muted">
-              <i class="bi bi-image fs-1"></i>
+  <!-- Category buttons -->
+  <div class="mb-5">
+    <h5 class="fw-semibold mb-3" style="color: #0a1940;">Browse by category</h5>
+    <div class="row g-3">
+      <div class="col-6 col-sm-4 col-md-2">
+        <a href="{{ url_for('listings.index') }}"
+           class="btn w-100 py-3 fw-semibold {% if not active_category %}text-white{% else %}btn-outline-secondary{% endif %}"
+           style="{% if not active_category %}background-color: #0a3d91; border-color: #0a3d91;{% endif %}">
+          All
+        </a>
+      </div>
+      {% for cat in categories %}
+      <div class="col-6 col-sm-4 col-md-2">
+        <a href="{{ url_for('listings.index', category=cat) }}"
+           class="btn w-100 py-3 fw-semibold {% if active_category == cat %}text-white{% else %}btn-outline-secondary{% endif %}"
+           style="{% if active_category == cat %}background-color: #0a3d91; border-color: #0a3d91;{% endif %}">
+          {{ cat }}
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Listings grid -->
+  <h5 class="fw-semibold mb-3" style="color: #0a1940;">
+    {% if active_category %}{{ active_category }}{% else %}All listings{% endif %}
+  </h5>
+
+  {% if listings %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+      {% for listing in listings %}
+        <div class="col">
+          <div class="card h-100 border-0 rounded-3"
+               style="box-shadow: 0 2px 12px rgba(10,25,60,0.1); transition: transform 0.2s, box-shadow 0.2s;"
+               onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(10,25,60,0.15)';"
+               onmouseout="this.style.transform=''; this.style.boxShadow='0 2px 12px rgba(10,25,60,0.1)';">
+            {% if listing.photo_filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ listing.photo_filename) }}"
+                   class="card-img-top rounded-top-3"
+                   style="height: 200px; object-fit: cover;"
+                   alt="{{ listing.title }}">
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center rounded-top-3"
+                   style="height: 200px; background-color: #eef1f8;">
+                <span style="font-size: 3rem;">📦</span>
+              </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <span class="badge mb-1 align-self-start"
+                    style="background-color: #eef1f8; color: #0a3d91; font-weight: 600;">
+                {{ listing.category }}
+              </span>
+              <h6 class="card-title fw-semibold mb-1">{{ listing.title }}</h6>
+              <p class="fw-bold mb-3" style="color: #0a3d91;">€{{ "%.2f"|format(listing.price) }}</p>
+              <a href="{{ url_for('listings.detail', listing_id=listing.id) }}"
+                 class="btn btn-sm mt-auto fw-semibold"
+                 style="border-color: #0a3d91; color: #0a3d91;">
+                View Details
+              </a>
             </div>
-          {% endif %}
-          <div class="card-body">
-            <span class="badge bg-secondary mb-1">{{ listing.category }}</span>
-            <h5 class="card-title">{{ listing.title }}</h5>
-            <p class="card-text fw-bold text-primary">€{{ "%.2f"|format(listing.price) }}</p>
-            <p class="card-text text-muted small">
-              {{ listing.description[:80] }}{% if listing.description|length > 80 %}...{% endif %}
-            </p>
-          </div>
-          <div class="card-footer bg-white border-top-0">
-            <a href="{{ url_for('listings.detail', listing_id=listing.id) }}"
-               class="btn btn-sm btn-outline-primary w-100">View Details</a>
           </div>
         </div>
-      </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <div class="text-center text-muted py-5">
-    <i class="bi bi-basket fs-1"></i>
-    <p class="mt-2">No listings yet. Be the first to sell something!</p>
-  </div>
-{% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <p class="text-muted fs-5">No listings found.</p>
+      <a href="{{ url_for('listings.new_listing') }}" class="btn fw-semibold text-white"
+         style="background-color: #0a3d91;">
+        Be the first to sell something!
+      </a>
+    </div>
+  {% endif %}
+
+</div>
 {% endblock %}

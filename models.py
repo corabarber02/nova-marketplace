@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from extensions import db, login_manager
 
 # Agreed category list — do not change without telling all team members
-CATEGORIES = ['Books', 'Clothes', 'Furniture', 'Electronics', 'Other']
+CATEGORIES = ['Sport', 'Home & Utilities', 'Clothing', 'Books', 'Transportation', 'Other']
 
 
 @login_manager.user_loader

@@ -16,10 +16,17 @@ def allowed_file(filename):
 @listings_bp.route('/')
 def index():
     category = request.args.get('category')
+    search = request.args.get('search', '').strip()
+
+    query = Listing.query
+
     if category and category in CATEGORIES:
-        listings = Listing.query.filter_by(category=category).order_by(Listing.created_at.desc()).all()
-    else:
-        listings = Listing.query.order_by(Listing.created_at.desc()).all()
+        query = query.filter_by(category=category)
+
+    if search:
+        query = query.filter(Listing.title.ilike(f'%{search}%'))
+
+    listings = query.order_by(Listing.created_at.desc()).all()
     return render_template('index.html', listings=listings, categories=CATEGORIES, active_category=category)
 
 
