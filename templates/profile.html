@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — Nova SBE Marketplace{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h1 class="fw-bold mb-1">{{ current_user.name }}</h1>
+      <p class="text-muted mb-0">{{ current_user.email }}</p>
+      <p class="text-muted small mb-0">{{ listings|length }} active listing{{ 's' if listings|length != 1 else '' }}</p>
+    </div>
+    <a href="{{ url_for('listings.new_listing') }}" class="btn btn-primary">+ Sell New Item</a>
+  </div>
+
+  {% if listings %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      {% for listing in listings %}
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            {% if listing.photo_filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ listing.photo_filename) }}"
+                   class="card-img-top"
+                   style="height: 200px; object-fit: cover;"
+                   alt="{{ listing.title }}">
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center bg-light"
+                   style="height: 200px;">
+                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+              </div>
+            {% endif %}
+
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-secondary mb-1 align-self-start">{{ listing.category }}</span>
+              <h6 class="card-title fw-semibold mb-1">{{ listing.title }}</h6>
+              <p class="fw-bold text-primary mb-3">€{{ "%.2f"|format(listing.price) }}</p>
+
+              <div class="mt-auto d-flex gap-2 flex-wrap">
+                <a href="{{ url_for('listings.detail', listing_id=listing.id) }}"
+                   class="btn btn-outline-secondary btn-sm">View</a>
+                <a href="{{ url_for('listings.edit_listing', listing_id=listing.id) }}"
+                   class="btn btn-outline-primary btn-sm">Edit</a>
+                <form action="{{ url_for('listings.delete_listing', listing_id=listing.id) }}"
+                      method="POST"
+                      onsubmit="return confirm('Delete this listing? This cannot be undone.');">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="text-center py-5">
+      <p class="text-muted fs-5">You don't have any listings yet.</p>
+      <a href="{{ url_for('listings.new_listing') }}" class="btn btn-primary">Create your first listing</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
