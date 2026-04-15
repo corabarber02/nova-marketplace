@@ -1,7 +1,21 @@
-venv/
-instance/
-*.db
-static/uploads/*
+# Python
 __pycache__/
 *.pyc
+*.pyo
+
+# Virtual environment
+venv/
+
+# Database
+instance/
+*.db
+
+# Uploaded photos
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Mac
 .DS_Store
+
+# VS Code
+.vscode/
