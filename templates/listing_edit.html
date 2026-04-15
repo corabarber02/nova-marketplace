@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Edit listing — Nova SBE Marketplace{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 680px;">
+  <div class="mb-4">
+    <a href="{{ url_for('listings.detail', listing_id=listing.id) }}" class="text-decoration-none text-secondary small">
+      &larr; Back to listing
+    </a>
+    <h1 class="mt-2 fw-bold">Edit listing</h1>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4">
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      <div class="mb-3">
+        <label for="title" class="form-label fw-semibold">Title</label>
+        <input type="text" class="form-control" id="title" name="title"
+               maxlength="100" required
+               value="{{ listing.title }}">
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label fw-semibold">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="4" required>{{ listing.description }}</textarea>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+          <label for="price" class="form-label fw-semibold">Price (€)</label>
+          <div class="input-group">
+            <span class="input-group-text">€</span>
+            <input type="number" class="form-control" id="price" name="price"
+                   step="0.01" min="0" required value="{{ listing.price }}">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <label for="category" class="form-label fw-semibold">Category</label>
+          <select class="form-select" id="category" name="category" required>
+            {% for cat in categories %}
+              <option value="{{ cat }}" {% if listing.category == cat %}selected{% endif %}>
+                {{ cat }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="contact_info" class="form-label fw-semibold">Contact info</label>
+        <input type="text" class="form-control" id="contact_info" name="contact_info"
+               maxlength="150" required value="{{ listing.contact_info }}">
+      </div>
+
+      <div class="mb-4">
+        <label for="photo" class="form-label fw-semibold">Photo (optional)</label>
+        {% if listing.photo_filename %}
+          <div class="mb-2">
+            <img src="{{ url_for('static', filename='uploads/' ~ listing.photo_filename) }}"
+                 class="img-thumbnail" style="max-height: 120px;" alt="Current photo">
+          </div>
+        {% endif %}
+        <input class="form-control" type="file" id="photo" name="photo"
+               accept=".png,.jpg,.jpeg,.gif,.webp">
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">Save changes</button>
+        <a href="{{ url_for('listings.detail', listing_id=listing.id) }}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
