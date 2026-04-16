@@ -8,7 +8,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'nova-sbe-secret-key'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///marketplace.db'
     app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB max photo size
+    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
     db.init_app(app)
 
@@ -19,10 +19,12 @@ def create_app():
     from auth import auth_bp
     from listings import listings_bp
     from profile import profile_bp
+    from messages import messages_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(listings_bp)
     app.register_blueprint(profile_bp)
+    app.register_blueprint(messages_bp)
 
     with app.app_context():
         db.create_all()
