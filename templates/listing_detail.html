@@ -62,7 +62,19 @@
           </div>
         {% endif %}
       </div>
+
+      {% if current_user.is_authenticated and current_user.id != listing.user_id %}
+        <hr>
+        <h6 class="text-uppercase text-muted small fw-semibold mb-2">Send a request to buy</h6>
+        <form method="POST" action="{{ url_for('messages.contact_seller', listing_id=listing.id) }}">
+          <div class="mb-2">
+            <textarea name="body" class="form-control" rows="2" placeholder="Write your message to the seller..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Contact Seller</button>
+        </form>
+      {% endif %}
+
     </div>
   </div>
 </div>
-{% endblock %}s
+{% endblock %}
