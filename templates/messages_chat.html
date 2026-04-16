@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Chat{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 700px;">
+
+  <h4>{{ conv.listing.title }}</h4>
+  <p class="text-muted">{{ conv.buyer.name }} → {{ conv.seller.name }}</p>
+
+  <!-- Accept / Reject buttons for seller if pending -->
+  {% if current_user.id == conv.seller_id and conv.status == 'pending' %}
+    <div class="alert alert-warning d-flex gap-2 align-items-center">
+      <span>New request from <strong>{{ conv.buyer.name }}</strong></span>
+      <form method="POST" action="{{ url_for('messages.accept', conversation_id=conv.id) }}">
+        <button class="btn btn-success btn-sm">Accept</button>
+      </form>
+      <form method="POST" action="{{ url_for('messages.reject', conversation_id=conv.id) }}">
+        <button class="btn btn-danger btn-sm">Reject</button>
+      </form>
+    </div>
+  {% elif conv.status == 'rejected' %}
+    <div class="alert alert-secondary">This request was rejected.</div>
+  {% endif %}
+
+  <!-- Messages -->
+  <div class="border rounded p-3 mb-3" style="min-height: 300px; background: #f8f9fa;">
+    {% for msg in conv.messages %}
+      <div class="mb-3 {% if msg.sender_id == current_user.id %}text-end{% endif %}">
+        <span class="badge bg-secondary mb-1">{{ msg.sender.name }}</span>
+        <div class="d-inline-block p-2 rounded
+          {% if msg.sender_id == current_user.id %}bg-primary text-white{% else %}bg-white border{% endif %}"
+          style="max-width: 80%;">
+          {{ msg.body }}
+        </div>
+        <div class="text-muted" style="font-size: 0.75rem;">
+          {{ msg.created_at.strftime('%d.%m.%Y %H:%M') }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Reply form (only if accepted) -->
+  {% if conv.status == 'accepted' %}
+    <form method="POST">
+      <div class="input-group">
+        <input type="text" name="body" class="form-control" placeholder="Write a message..." required>
+        <button class="btn btn-primary" type="submit">Send</button>
+      </div>
+    </form>
+  {% endif %}
+
+</div>
+{% endblock %}
